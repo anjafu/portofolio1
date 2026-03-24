@@ -3,16 +3,11 @@ const regURL = `${baseURL}/start`;
 const statusURL = `${baseURL}/status`;
 const answerURL = `${baseURL}/submit`;
 
-
-//kan ta dette ut i en annen fil for bedre karakter
 const credentials = {
         "email": "anjafu@uia.no", 
         "nick": "anjafu", 
         "pin": "1234"
     };
-
-//POST
-/*- Returns: { "token": "your_token_here", "statusUrl": "/status" }*/
 
 let token = "";
 
@@ -28,66 +23,54 @@ const requestHeaders = () => {
     }
 }*/
 
-//await pga tar tid å hente ting over internett
-//gjør noe aktivt
-let respons = await fetch(regURL, {
-    method: "POST",
-    headers: requestHeaders,
-    body:JSON.stringify(credentials)
-});
+async function logInToServer(credentials){
+    let response = await fetch(regURL, {
+        method: "POST",
+        headers: requestHeaders,
+        body:JSON.stringify(credentials)
+    }); 
 
-//alt i 200 betyr alt gikk fint så kan ta mindre enn 300
-//sjekker om noe skjedde i respons, strukturerer info
-if(respons.status < 300){
+    if(response.status < 300){
+        response = await response.json();
+        token = response.token;
+        requestHeaders.Authorization = token;
+    }   
 
-    respons = await respons.json();
-    token = respons.token;
-    requestHeaders.Authorization = token;
+    console.log(response);
 }
-console.log(respons);
-
-respons = await fetch(statusURL, {
-    method: "GET",
-    headers: requestHeaders,
-});
 
 
-if(respons.status === 200){
-    respons = await respons.json();
+async function getCurrentQuestion(){
+    let response = await fetch(statusURL, {
+        method: "GET",
+        headers: requestHeaders,
+    });
+
+    if(response.status === 200){
+        response = await response.json();
+    }
+
+    return response;
 }
-console.log(respons);
 
+async function sendAnswer(answer){
+    const answerObject = {"answer" : answer};
 
-//skal ikke kjøre samme svar om igjen, hvordan fikse det? kan ikke kommentere ut
-/*
-//oppgave 1
-const answer = {"answer": 4};
+    let response = await fetch(answerURL, {
+        method: "POST",
+        headers: requestHeaders,
+        body:JSON.stringify(answerObject)
+    });
 
-respons = await fetch(answerURL, {
-    method: "POST",
-    headers: requestHeaders,
-    body:JSON.stringify(answer)
-});
+    if(response.status === 200){
+        response = await response.json();
+    }
 
-if(respons.status === 200){
-    respons = await respons.json();
+    return response;
 }
-console.log(respons);
 
-
-//oppgave 2
-const answer = {"answer": "pi"};
-
-respons = await fetch(answerURL, {
-    method: "POST",
-    headers: requestHeaders,
-    body:JSON.stringify(answer)
-});
-
-if(respons.status === 200){
-    respons = await respons.json();
-}
-console.log(respons);
-
-*/
+await logInToServer(credentials);
+console.log(await getCurrentQuestion());
+//console.log(await sendAnswer(4));
+//console.log(await sendAnswer("pi"));
 

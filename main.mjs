@@ -15,13 +15,13 @@ const requestHeaders = {
     "Content-Type": "application/json",
     "Authorization": token,
 }
-/*
-const requestHeaders = () => {
-    return {
-        "Content-Type": "application/json",
-        "Authorization": token, //hvis token endres, så endres den aldri her hvis d ikke var funksjon
-    }
-}*/
+
+async function init(){
+    await logInToServer(credentials);
+    console.log(await getCurrentQuestion());
+    //console.log(await sendAnswer(4));
+    //console.log(await sendAnswer("pi"));
+}
 
 async function logInToServer(credentials){
     let response = await fetch(regURL, {
@@ -68,9 +68,3 @@ async function sendAnswer(answer){
 
     return response;
 }
-
-await logInToServer(credentials);
-console.log(await getCurrentQuestion());
-//console.log(await sendAnswer(4));
-//console.log(await sendAnswer("pi"));
-

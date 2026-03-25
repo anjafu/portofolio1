@@ -69,8 +69,19 @@ function runStringInChunks(string, chunkSize){
     return fiveCharactersArray;
 }
 
+// ANSI escape codes for text color
+const red = '\x1b[31m';
+const green = "\x1b[38;2;59;191;89m";
+const cyan = '\x1b[36m';
+const purple = "\x1b[38;2;177;67;204m";
+const lightPurple = "\x1b[38;2;220;110;250m";
+//38 is for foreground (48 background), 2 makes it expect three rbg numbers
+const pink = "\x1b[38;2;255;51;153m";
+const reset = '\x1b[0m';
+
 async function init(){
-    await logInToServer(credentials) ? console.log("LOG IN SUCCESSFUL") : console.log("haha loser")
+    await logInToServer(credentials) ? 
+    console.log(cyan + "Log in successful \n" + reset) : console.log(red + "haha loser \n" + reset);
 
     //question 1 and 2:
     //console.log(await sendAnswer(4));
@@ -102,11 +113,11 @@ async function init(){
     console.log(await sendAnswer(answerToQuestion5));*/
 
     //show question for user:
-    //let questionData = await getCurrentQuestion();
-    //console.log(questionData);
-
-
-    //console.log(await getClue());
+    let questionData = await getCurrentQuestion();
+    console.log("\x1b[1m\x1b[4m" + purple + "Question " + questionData.challengeId + ":" + reset);
+    console.log(lightPurple + questionData.prompt + reset);
+    console.log(pink + "Points possible: " + questionData.pointsPossible + reset);
+    console.log(pink + "Current score: " + questionData.currentScore + reset);
     
     //send answer
     

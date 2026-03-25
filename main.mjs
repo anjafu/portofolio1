@@ -48,6 +48,28 @@ function findBigLetters(text){
     return onlyBigLetters;
 }
 
+const andGate = (a, b) => { if(a == 1 && b == 1) {return 1} else {return 0}};
+const orGate = (a, b) => { if(a == 1 || b == 1) {return 1} else {return 0}};
+const notGate = (a) => { if(a == 0) {return 1} else {return 0}};
+const andNotGate = (a, b) =>  notGate(andGate(a,b));
+const xOrGate = (a, b) => { if((a == 1 && b == 0) || (a == 0 && b == 1)) {return 1} else {return 0}};
+
+function curcuit(a,b,c,d,e){
+    const outputA = orGate(andGate(a,b), notGate(c));
+    const outputB = andNotGate(xOrGate(c,d), andGate(d,e));
+
+    return "" + outputA + outputB;
+}
+
+function runStringInChunks(string, chunkSize){
+    let fiveCharactersArray = [];
+
+    for (let i = 0; i < string.length; i += chunkSize) {
+        fiveCharactersArray.push(string.slice(i, i + chunkSize));
+    }
+
+    return fiveCharactersArray;
+}
 
 async function init(){
     await logInToServer(credentials);
@@ -66,13 +88,27 @@ async function init(){
     //let poemBigLetters = findBigLetters(poem);
     //console.log(await sendAnswer(poemBigLetters));
 
+    //question 5:
+    /*
+    let digits = questionData.prompt.split('"')[1].split('"')[0];
+    const digitsFiveChunked = runStringInChunks(digits, 5);
+    console.table(digitsFiveChunked);
+    
+    let answerToQuestion5 = "";
+    for (let chunk of digitsFiveChunked){
+        if(chunk.length == 5){
+            answerToQuestion5 += curcuit(chunk[0], chunk[1], chunk[2], chunk[3], chunk[4]);
+        }
+    }
+
+    console.log(await sendAnswer(answerToQuestion5));*/
+
     //show question for user:
     let questionData = await getCurrentQuestion();
     console.log(questionData);
     //console.log(await getClue());
     
     //send answer
-    
     
 }
 

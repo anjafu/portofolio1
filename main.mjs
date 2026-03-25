@@ -70,7 +70,8 @@ function runStringInChunks(string, chunkSize){
 }
 
 async function init(){
-    await logInToServer(credentials);
+    await logInToServer(credentials) ? console.log("LOG IN SUCCESSFUL") : console.log("haha loser")
+
     //question 1 and 2:
     //console.log(await sendAnswer(4));
     //console.log(await sendAnswer("pi"));
@@ -101,8 +102,10 @@ async function init(){
     console.log(await sendAnswer(answerToQuestion5));*/
 
     //show question for user:
-    let questionData = await getCurrentQuestion();
-    console.log(questionData);
+    //let questionData = await getCurrentQuestion();
+    //console.log(questionData);
+
+
     //console.log(await getClue());
     
     //send answer
@@ -122,9 +125,11 @@ async function logInToServer(credentials){
         response = await response.json();
         token = response.token;
         requestHeaders.Authorization = token;
-    }   
 
-    console.log(response);
+        return true;
+    } else {
+        return false;
+    }
 }
 
 

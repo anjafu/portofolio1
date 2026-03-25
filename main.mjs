@@ -2,6 +2,7 @@ const baseURL = "https://alchemy-kd0l.onrender.com";
 const regURL = `${baseURL}/start`;
 const statusURL = `${baseURL}/status`;
 const answerURL = `${baseURL}/submit`;
+const clueURL = `${baseURL}/clue`;
 
 const credentials = {
         "email": "anjafu@uia.no", 
@@ -16,12 +17,49 @@ const requestHeaders = {
     "Authorization": token,
 }
 
+const symbolDictonary = {
+    "☉" : "Gold",
+    "☿" : "Quicksilver",
+    "☽" : "Silver",
+    "♂" : "Iron"
+}
+
+function decode(code){
+    let decodedCode = "";
+
+    for(let letter of code){
+        let decodedLetter = symbolDictonary[letter];
+        decodedCode += decodedLetter;
+    }
+
+    return decodedCode;
+}
+
+
 async function init(){
     await logInToServer(credentials);
-    console.log(await getCurrentQuestion());
+    //question 1 and 2:
     //console.log(await sendAnswer(4));
     //console.log(await sendAnswer("pi"));
+
+    //question 3:
+    //let codeword = questionData.prompt.split("“")[1].split("”")[0];
+    //let answerQuestion3 = decode(codeword);
+    //console.log(answerQuestion3);
+    //console.log(await sendAnswer(answerQuestion3));
+
+    //question 4:
+
+    //show question for user:
+    let questionData = await getCurrentQuestion();
+    console.log(questionData);
+    //console.log(await getClue());
+    
+    //send answer
+    
 }
+
+init();
 
 async function logInToServer(credentials){
     let response = await fetch(regURL, {
@@ -60,6 +98,19 @@ async function sendAnswer(answer){
         method: "POST",
         headers: requestHeaders,
         body:JSON.stringify(answerObject)
+    });
+
+    if(response.status === 200){
+        response = await response.json();
+    }
+
+    return response;
+}
+
+async function getClue(){
+    let response = await fetch(clueURL, {
+        method: "GET",
+        headers: requestHeaders,
     });
 
     if(response.status === 200){

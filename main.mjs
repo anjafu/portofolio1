@@ -65,7 +65,9 @@ function runStringInChunks(string, chunkSize){
     let fiveCharactersArray = [];
 
     for (let i = 0; i < string.length; i += chunkSize) {
-        fiveCharactersArray.push(string.slice(i, i + chunkSize));
+        if(string.length >= i + chunkSize){
+            fiveCharactersArray.push(string.slice(i, i + chunkSize));
+        }
     }
 
     return fiveCharactersArray;
@@ -89,16 +91,15 @@ async function init(){
     //console.log(await sendAnswer(poemBigLetters));
 
     //question 5:
+    
     /*
     let digits = questionData.prompt.split('"')[1].split('"')[0];
     const digitsFiveChunked = runStringInChunks(digits, 5);
     console.table(digitsFiveChunked);
-    
     let answerToQuestion5 = "";
+
     for (let chunk of digitsFiveChunked){
-        if(chunk.length == 5){
-            answerToQuestion5 += curcuit(chunk[0], chunk[1], chunk[2], chunk[3], chunk[4]);
-        }
+        answerToQuestion5 += curcuit(chunk[0], chunk[1], chunk[2], chunk[3], chunk[4]);
     }
 
     console.log(await sendAnswer(answerToQuestion5));*/

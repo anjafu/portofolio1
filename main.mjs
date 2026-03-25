@@ -35,6 +35,19 @@ function decode(code){
     return decodedCode;
 }
 
+function findBigLetters(text){
+    let onlyBigLetters = "";
+
+    for(let letter of text){
+        //checks if letter is the same as uppercase and that its a letter and not symbol/space
+        if(letter == letter.toUpperCase() && letter.match(/[a-z]/i)){
+            onlyBigLetters += letter;
+        }
+    }
+    
+    return onlyBigLetters;
+}
+
 
 async function init(){
     await logInToServer(credentials);
@@ -49,6 +62,9 @@ async function init(){
     //console.log(await sendAnswer(answerQuestion3));
 
     //question 4:
+    //let poem = questionData.prompt.split("“")[1].split("”")[0];
+    //let poemBigLetters = findBigLetters(poem);
+    //console.log(await sendAnswer(poemBigLetters));
 
     //show question for user:
     let questionData = await getCurrentQuestion();
@@ -56,6 +72,7 @@ async function init(){
     //console.log(await getClue());
     
     //send answer
+    
     
 }
 

@@ -4,11 +4,7 @@ const statusURL = `${baseURL}/status`;
 const answerURL = `${baseURL}/submit`;
 const clueURL = `${baseURL}/clue`;
 
-const credentials = {
-        "email": "anjafu@uia.no", 
-        "nick": "anjafu", 
-        "pin": "1234"
-    };
+import credentials from './credentials.mjs';
 
 let token = "";
 

@@ -8,12 +8,12 @@ let answerObjects = {
 }
 
 //testing how async function is inside object
-async function answer1(){
-    let notesURL = "https://alchemy-kd0l.onrender.com/notes.md";
-    let note = await (await fetch(notesURL)).text();
+async function answer1(string){
+    let note = await (await fetch(string)).text();
     return "answer1 yay";
 }
 
+//test what happens when you send input to a function without input
 async function answer2(){
     return "answer2 yay";
 }
@@ -31,7 +31,7 @@ let challengeData = {
 }
 
 while (challengeData.message == undefined) {
-    let currentAnswer = await answerObjects[challengeData.id]();
+    let currentAnswer = await answerObjects[challengeData.id]("https://alchemy-kd0l.onrender.com/notes.md");
     console.log(currentAnswer);
     challengeData.id += 1;
 

@@ -223,7 +223,8 @@ async function init(){
         console.log(pink + "Current score: " + questionData.currentScore);
 
         //step 3: solve current challenge 
-        let currentChallengeAnswer = await challengeAnswers[questionData.challengeId]();
+        //send questionData if needed to solve challenge (prompt)
+        let currentChallengeAnswer = await challengeAnswers[questionData.challengeId](questionData);
         console.log(cyan + "Trying answer: " + currentChallengeAnswer);
 
         //step 4: send the answer to server

@@ -69,6 +69,22 @@ function runStringInChunks(string, chunkSize){
     return fiveCharactersArray;
 }
 
+function decipherCode(key, code){
+    let alphabet = "abcdefghijklmnopqrstuvwxyz";
+    let decipheredCode = "";
+
+    for (let char of code){
+        if(char.match(/[a-z]/i)){
+            let decipheredCharacter = alphabet[key.indexOf(char)];
+            decipheredCode += decipheredCharacter;
+        } else if (!decipheredCode.endsWith(" ")){
+            decipheredCode += " ";
+        }
+    }
+
+    return decipheredCode;
+}
+
 // ANSI escape codes for text color
 const red = '\x1b[31m';
 const green = "\x1b[38;2;59;191;89m";
@@ -81,7 +97,7 @@ const reset = '\x1b[0m';
 
 async function init(){
     await logInToServer(credentials) ? 
-    console.log(cyan + "Log in successful \n" + reset) : console.log(red + "haha loser \n" + reset);
+    console.log(cyan + "Log in successful \n") : console.log(red + "haha loser \n");
 
     //question 1 and 2:
     //console.log(await sendAnswer(4));
@@ -115,11 +131,18 @@ async function init(){
     //show question for user:
     let questionData = await getCurrentQuestion();
     console.log("\x1b[1m\x1b[4m" + purple + "Question " + questionData.challengeId + ":" + reset);
-    console.log(lightPurple + questionData.prompt + reset);
-    console.log(pink + "Points possible: " + questionData.pointsPossible + reset);
-    console.log(pink + "Current score: " + questionData.currentScore + reset);
+    console.log(lightPurple + questionData.prompt);
+    console.log(pink + "Points possible: " + questionData.pointsPossible);
+    console.log(pink + "Current score: " + questionData.currentScore);
+    console.log(reset + "\n" );
     
     //send answer
+    let notesURL = "https://alchemy-kd0l.onrender.com/notes.md";
+    let noteURL = "https://alchemy-kd0l.onrender.com/strangeNote.txt";
+    let note = await (await fetch(notesURL)).text();
+    let cipherKey = findBigLetters(note);
+    let cipheredNote = await (await fetch(noteURL)).text();
+    console.log(decipherCode(cipherKey, cipheredNote));
     
 }
 

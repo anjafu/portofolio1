@@ -69,20 +69,45 @@ function runStringInChunks(string, chunkSize){
     return fiveCharactersArray;
 }
 
+//deciphers a code as long as u have a key and the code to decipher
+//NOTE: does not work when we use regular key as key = 2, only when key is whole alphabet
+//could make key = number and then make let cipheredAlphabet = whatever it is when u push it by a number
 function decipherCode(key, code){
     let alphabet = "abcdefghijklmnopqrstuvwxyz";
-    let decipheredCode = "";
+    let output = "";
 
-    for (let char of code){
-        if(char.match(/[a-z]/i)){
-            let decipheredCharacter = alphabet[key.indexOf(char)];
-            decipheredCode += decipheredCharacter;
-        } else if (!decipheredCode.endsWith(" ")){
-            decipheredCode += " ";
+    for (let char of code){ //each character in the code to decipher
+        if(char.match(/[a-z]/i)){ //if it is a letter we need to decode
+            let decipheredCharacter = alphabet[key.indexOf(char)]; //the deciphered letter 
+            output += decipheredCharacter; //add it to the deciphered text
+        } else if (!output.endsWith(" ")){ //makes sure no repeated spaces
+            output += " ";
         }
     }
 
-    return decipheredCode;
+    return output;
+}
+
+//make each letter of a word in a string have capital letter
+function properCaseString(string){
+    let output = "";
+
+    //for loop that goes through each index in string (in NOT for)
+    for (let i in string) {
+        const char = string[i]; //the current character in the string we are iterating
+
+        if(char.match(/[a-z]/i)){ //if it is a letter
+            if ((string[i - 1]) == undefined || string[i - 1] == " ") { //first char in string if so OR previous char
+                output += char.toUpperCase();
+            } else { //if it is not first letter of word -> do not make upper case 
+                output += char.toLowerCase();
+            }
+        } else { //if not letter -> add to output string
+            output += char;
+        }
+    }
+
+    return output;
 }
 
 // ANSI escape codes for text color
@@ -115,7 +140,6 @@ async function init(){
     //console.log(await sendAnswer(poemBigLetters));
 
     //question 5:
-    
     /*
     let digits = questionData.prompt.split('"')[1].split('"')[0];
     const digitsFiveChunked = runStringInChunks(digits, 5);
@@ -142,7 +166,8 @@ async function init(){
     let note = await (await fetch(notesURL)).text();
     let cipherKey = findBigLetters(note);
     let cipheredNote = await (await fetch(noteURL)).text();
-    console.log(decipherCode(cipherKey, cipheredNote));
+    let dechiperedNote = properCaseString(decipherCode(cipherKey, cipheredNote));
+    //console.log(dechiperedNote);
     
 }
 

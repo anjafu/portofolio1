@@ -15,6 +15,31 @@ const requestHeaders = {
 }
 
 //#endregion
+
+//#region Challenge answers
+let challengeAnswers = {
+    1: solveChallenge1,
+    2: solveChallenge2,
+    3: solveChallenge3,
+    4: solveChallenge4,
+    5: solveChallenge5,
+    6: solveChallenge6
+}
+//#endregion
+
+//if better planning: would make file for each challenge like solveChallenge1 and export, import to make main.mjs file less messy
+//#region Challenge 1
+function solveChallenge1(){
+    return 4;
+}
+//#endregion
+
+//#region Challenge 2
+function solveChallenge2(){
+    return "pi";
+}
+//#endregion
+
 //#region Challenge 3
 const symbolDictonary = {
     "☉" : "Gold",
@@ -34,6 +59,12 @@ function decodeWithDictionary(code, dictionary){
 
     return output;
 }
+
+async function solveChallenge3(questionData){
+    let codeword = questionData.prompt.split("“")[1].split("”")[0];
+    let answerQuestion3 = decodeWithDictionary(codeword);
+    return answerQuestion3;
+}
 //#endregion
 
 //#region Challenge 4
@@ -49,6 +80,12 @@ function findBigLetters(string){
     }
     
     return output;
+}
+
+async function solveChallenge4(questionData){
+    let poem = questionData.prompt.split("“")[1].split("”")[0];
+    let poemBigLetters = findBigLetters(poem);
+    return poemBigLetters;
 }
 //#endregion
 
@@ -79,6 +116,19 @@ function splitStringIntoChunks(string, chunkSize){
     }
 
     return output;
+}
+
+async function solveChallenge5(questionData){
+    let digits = questionData.prompt.split('"')[1].split('"')[0];
+    const digitsFiveChunked = splitStringIntoChunks(digits, 5);
+    console.table(digitsFiveChunked);
+    let answerToQuestion5 = "";
+
+    for (let chunk of digitsFiveChunked){
+        answerToQuestion5 += curcuit(chunk[0], chunk[1], chunk[2], chunk[3], chunk[4]);
+    }
+
+    return answerToQuestion5;
 }
 //#endregion
 
@@ -124,15 +174,31 @@ function properCaseString(string){
 
     return output;
 }
+
+async function solveChallenge6(){
+    //get the notes in prompt (no split because the links didnt have any "" etc to differentiate in the prompt)
+    let notesURL = "https://alchemy-kd0l.onrender.com/notes.md";
+    let noteURL = "https://alchemy-kd0l.onrender.com/strangeNote.txt";
+
+    //get only the text from the links
+    let note = await (await fetch(notesURL)).text();
+    let cipheredNote = await (await fetch(noteURL)).text();
+
+    //get all big letters in the long note (the cipher key)
+    let cipherKey = findBigLetters(note);
+
+    //decipher the other note with only random letters using the cipherKey
+    let dechiperedNote = properCaseString(decipherCode(cipherKey, cipheredNote));
+
+    return dechiperedNote;
+}
 //#endregion
 
 // ANSI escape codes for text color
 const red = '\x1b[31m';
-const green = "\x1b[38;2;59;191;89m";
 const cyan = '\x1b[36m';
 const purple = "\x1b[38;2;177;67;204m";
 const lightPurple = "\x1b[38;2;220;110;250m";
-//38 is for foreground (48 background), 2 makes it expect three rbg numbers
 const pink = "\x1b[38;2;255;51;153m";
 const reset = '\x1b[0m';
 
@@ -142,52 +208,37 @@ async function init(){
     //step 1: log in to server
     await logInToServer(credentials) ? 
     console.log(cyan + "Log in successful \n") : console.log(red + "haha loser \n");
+    
+    //get the current status data -> needs it for my while loop to work
+    let questionData = await getCurrentQuestion(); //initialze value
 
-    //question 1 and 2:
-    //console.log(await sendAnswer(4));
-    //console.log(await sendAnswer("pi"));
+    //runs until the server says we are done (defines a message) -> could also do challengeId > 6 or undefined?
+    //NOTE: CHANGED AFTER REACHED CHALLENGE 6.... so might not work... cant test... hope its ok...
+    while (questionData.message == undefined) {
+        //step 2: show current question for user:
+        questionData = await getCurrentQuestion();
+        console.log("\x1b[1m\x1b[4m" + purple + "Question " + questionData.challengeId + ":" + reset);
+        console.log(lightPurple + questionData.prompt);
+        console.log(pink + "Points possible: " + questionData.pointsPossible);
+        console.log(pink + "Current score: " + questionData.currentScore);
 
-    //question 3:
-    //let codeword = questionData.prompt.split("“")[1].split("”")[0];
-    //let answerQuestion3 = decodeWithDictionary(codeword);
-    //console.log(answerQuestion3);
-    //console.log(await sendAnswer(answerQuestion3));
+        //step 3: solve current challenge 
+        let currentChallengeAnswer = await challengeAnswers[questionData.challengeId]();
+        console.log(cyan + "Trying answer: " + currentChallengeAnswer);
 
-    //question 4:
-    //let poem = questionData.prompt.split("“")[1].split("”")[0];
-    //let poemBigLetters = findBigLetters(poem);
-    //console.log(await sendAnswer(poemBigLetters));
-
-    //question 5:
-    /*
-    let digits = questionData.prompt.split('"')[1].split('"')[0];
-    const digitsFiveChunked = splitStringIntoChunks(digits, 5);
-    console.table(digitsFiveChunked);
-    let answerToQuestion5 = "";
-
-    for (let chunk of digitsFiveChunked){
-        answerToQuestion5 += curcuit(chunk[0], chunk[1], chunk[2], chunk[3], chunk[4]);
+        //step 4: send the answer to server
+        let answerData = await sendAnswer(currentChallengeAnswer);
+            if (answerData.correct){
+                console.log(cyan + "Correct answer! Points awarded:" + answerData.awarded + "\n");
+            } else {
+                console.log(red + "Wrong answer \n");
+            }
     }
 
-    console.log(await sendAnswer(answerToQuestion5));*/
+    //when all challenges are complete
+    console.log(cyan + questionData.message + " Total score: " + questionData.finalScore);
 
-    //step 2: show question for user:
-    let questionData = await getCurrentQuestion();
-    console.log("\x1b[1m\x1b[4m" + purple + "Question " + questionData.challengeId + ":" + reset);
-    console.log(lightPurple + questionData.prompt);
-    console.log(pink + "Points possible: " + questionData.pointsPossible);
-    console.log(pink + "Current score: " + questionData.currentScore);
-    console.log(reset + "\n" );
-    
-    //step 3: send answer
-    let notesURL = "https://alchemy-kd0l.onrender.com/notes.md";
-    let noteURL = "https://alchemy-kd0l.onrender.com/strangeNote.txt";
-    let note = await (await fetch(notesURL)).text();
-    let cipherKey = findBigLetters(note);
-    let cipheredNote = await (await fetch(noteURL)).text();
-    let dechiperedNote = properCaseString(decipherCode(cipherKey, cipheredNote));
-    //console.log(dechiperedNote);
-    
+    console.log(reset); //resets all colors i added to console log
 }
 
 init(); //start program
